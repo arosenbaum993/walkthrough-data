@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Instructional Walkthrough</title>
+<style>
+  :root {
+    --bg: #fafaf8;
+    --surface: #ffffff;
+    --surface2: #f4f3ef;
+    --border: #e2e0d8;
+    --border2: #ccc9be;
+    --text: #1a1917;
+    --text2: #6b6860;
+    --text3: #9e9b92;
+    --accent: #2d5a8e;
+    --accent-bg: #eaf0f8;
+    --success: #1a6b3a;
+    --success-bg: #e8f5ee;
+    --warn: #7a4f00;
+    --warn-bg: #fef3dc;
+    --danger: #8b1a1a;
+    --danger-bg: #fdeaea;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.07);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #18181a;
+      --surface: #232326;
+      --surface2: #2c2c30;
+      --border: #3a3a3f;
+      --border2: #4a4a52;
+      --text: #f0eee8;
+      --text2: #a8a59c;
+      --text3: #6e6b63;
+      --accent: #6b9fd4;
+      --accent-bg: #1a2a3d;
+      --success: #5ab87a;
+      --success-bg: #0f2d1e;
+      --warn: #d4a44a;
+      --warn-bg: #2d200a;
+      --danger: #d46b6b;
+      --danger-bg: #2d0f0f;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.5; }
+
+  /* ── NAV ── */
+  .nav { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .nav-inner { max-width: 720px; margin: 0 auto; padding: 0 16px; display: flex; align-items: center; gap: 0; height: 52px; }
+  .nav-logo { font-size: 14px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; flex: 1; }
+  .nav-logo span { color: var(--accent); }
+  .nav-tabs { display: flex; gap: 2px; }
+  .nav-tab { padding: 6px 14px; font-size: 13px; border: none; background: none; color: var(--text2); cursor: pointer; border-radius: var(--radius-sm); transition: all .15s; font-family: inherit; }
+  .nav-tab.active { background: var(--surface2); color: var(--text); font-weight: 500; }
+
+  /* ── VIEWS ── */
+  .view { display: none; max-width: 720px; margin: 0 auto; padding: 20px 16px 80px; }
+  .view.active { display: block; }
+
+  /* ── FORM ── */
+  .section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; }
+  .section-hd { padding: 14px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+  .section-hd:hover { background: var(--surface2); }
+  .section-num { width: 24px; height: 24px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--text2); flex-shrink: 0; }
+  .section-title { font-size: 14px; font-weight: 600; flex: 1; }
+  .chevron { color: var(--text3); font-size: 12px; transition: transform .2s; }
+  .section-body { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+  .section.collapsed .section-body { display: none; }
+  .section.collapsed .chevron { transform: rotate(-90deg); }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+  input[type=text], input[type=date], input[type=time], select, textarea {
+    width: 100%; padding: 9px 11px; font-size: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    background: var(--surface2); color: var(--text); font-family: inherit; transition: border-color .15s;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  @media (max-width: 480px) { .grid3 { grid-template-columns: 1fr 1fr; } }
+
+  /* ── OBS ROWS ── */
+  .obs-item { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .obs-text { font-size: 13px; line-height: 1.5; color: var(--text); }
+  .pill-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pill { display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; border: 1px solid var(--border); border-radius: 20px; font-size: 12px; cursor: pointer; transition: all .12s; color: var(--text2); background: none; font-family: inherit; white-space: nowrap; }
+  .pill:hover { border-color: var(--border2); color: var(--text); }
+  .pill.sel-obs { border-color: var(--success); background: var(--success-bg); color: var(--success); font-weight: 500; }
+  .pill.sel-not { border-color: var(--danger); background: var(--danger-bg); color: var(--danger); font-weight: 500; }
+  .pill.sel-na { border-color: var(--border2); background: var(--surface2); color: var(--text2); font-weight: 500; }
+  .pill.sel-yes { border-color: var(--success); background: var(--success-bg); color: var(--success); font-weight: 500; }
+  .obs-note { font-size: 12px; padding: 6px 9px; min-height: 46px; }
+
+  /* ── TALLIES ── */
+  .tally-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tally-card { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .tally-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+  .tally-ctrl { display: flex; align-items: center; gap: 10px; }
+  .tally-btn { width: 32px; height: 32px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface2); color: var(--text); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .12s; }
+  .tally-btn:hover { background: var(--border); }
+  .tally-val { font-size: 22px; font-weight: 600; color: var(--text); min-width: 32px; text-align: center; }
+  .ratio-badge { font-size: 12px; padding: 4px 10px; border-radius: 20px; background: var(--accent-bg); color: var(--accent); font-weight: 500; align-self: flex-start; }
+
+  /* ── CHECKBOX ── */
+  .check-row { display: flex; align-items: center; gap: 9px; cursor: pointer; font-size: 14px; }
+  .check-row input[type=checkbox] { width: 17px; height: 17px; cursor: pointer; accent-color: var(--accent); flex-shrink: 0; }
+
+  /* ── BUTTONS ── */
+  .btn { padding: 10px 18px; font-size: 13px; font-weight: 500; border-radius: var(--radius-sm); cursor: pointer; font-family: inherit; transition: all .15s; }
+  .btn-primary { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-outline { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+  .btn-outline:hover { background: var(--surface2); }
+  .btn-danger { background: var(--danger-bg); border: 1px solid var(--danger); color: var(--danger); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-bar { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 8px; }
+
+  /* ── RECORDS LIST ── */
+  .records-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .records-header h2 { font-size: 16px; font-weight: 600; }
+  .record-count { font-size: 12px; color: var(--text2); }
+  .search-bar { position: relative; margin-bottom: 12px; }
+  .search-bar input { padding-left: 34px; }
+  .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 14px; pointer-events: none; }
+  .record-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; cursor: pointer; transition: border-color .15s; }
+  .record-card:hover { border-color: var(--border2); }
+  .record-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .record-teacher { font-size: 15px; font-weight: 600; }
+  .record-meta { font-size: 12px; color: var(--text2); margin-top: 3px; }
+  .record-badges { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+  .badge { font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: 500; }
+  .badge-blue { background: var(--accent-bg); color: var(--accent); }
+  .badge-green { background: var(--success-bg); color: var(--success); }
+  .badge-gray { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+  .record-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text2); }
+  .empty-state .big { font-size: 36px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; line-height: 1.6; }
+
+  /* ── DETAIL VIEW ── */
+  .detail-hd { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .detail-title { font-size: 17px; font-weight: 600; flex: 1; }
+  .detail-section { margin-bottom: 16px; }
+  .detail-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text2); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 10px; }
+  .detail-row { display: flex; gap: 8px; margin-bottom: 6px; align-items: flex-start; }
+  .detail-key { font-size: 12px; color: var(--text2); min-width: 100px; flex-shrink: 0; }
+  .detail-val { font-size: 13px; color: var(--text); }
+  .status-pill { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+  .sp-obs { background: var(--success-bg); color: var(--success); }
+  .sp-not { background: var(--danger-bg); color: var(--danger); }
+  .sp-na { background: var(--surface2); color: var(--text2); }
+
+  /* ── TOAST ── */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; transition: all .25s; pointer-events: none; z-index: 999; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── SUMMARY STATS ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; text-align: center; }
+  .stat-num { font-size: 26px; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* ── EXPORT ── */
+  .export-area { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; font-size: 12px; font-family: 'Courier New', monospace; white-space: pre-wrap; line-height: 1.6; max-height: 400px; overflow-y: auto; color: var(--text); margin-top: 10px; }
+
+  .divider { height: 1px; background: var(--border); margin: 4px 0; }
+  .time-row { display: flex; gap: 8px; align-items: center; }
+  .time-row span { font-size: 13px; color: var(--text3); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">Walk<span>·</span>through</div>
+    <div style="flex:1;padding:0 10px;"><span id="sync-status" style="font-size:11px;color:var(--text3);"></span></div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showView('form')">New visit</button>
+      <button class="nav-tab" onclick="showView('records')">Records</button>
+      <button class="nav-tab" onclick="openSettings()" title="Settings">⚙</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ FORM VIEW ══ -->
+<div class="view active" id="view-form">
+
+  <div id="edit-banner" style="display:none;background:var(--warn-bg);border:1px solid var(--warn);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--warn);display:none;align-items:center;gap:8px;">
+    <span>Editing saved record</span>
+    <button class="btn btn-sm btn-outline" onclick="cancelEdit()" style="margin-left:auto">Cancel edit</button>
+  </div>
+
+  <!-- S1 BASICS -->
+  <div class="section" id="s1">
+    <div class="section-hd" onclick="toggleSection('s1')">
+      <div class="section-num">1</div>
+      <span class="section-title">Basics</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="grid2">
+        <div class="field"><span class="label">Teacher name</span><input type="text" id="f-teacher" placeholder="Last, First"></div>
+        <div class="field"><span class="label">Date</span><input type="date" id="f-date"></div>
+      </div>
+      <div class="grid3">
+        <div class="field"><span class="label">Class / subject</span><input type="text" id="f-subject" placeholder="e.g. 8th ELA"></div>
+        <div class="field"><span class="label">Grade level</span><input type="text" id="f-grade" placeholder="e.g. 8"></div>
+        <div class="field">
+          <span class="label">Time in / out</span>
+          <div class="time-row">
+            <input type="time" id="f-timein" style="flex:1">
+            <span>–</span>
+            <input type="time" id="f-timeout" style="flex:1">
+          </div>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <span class="label">Focus area</span>
+          <select id="f-focus">
+            <option value="">Select focus...</option>
+            <option>High-impact strategies</option>
+            <option>Student engagement</option>
+            <option>Both</option>
+          </select>
+        </div>
+        <div class="field"><span class="label">Teacher's current goal</span><input type="text" id="f-goal" placeholder="What is the teacher working toward?"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2 HIGH IMPACT -->
+  <div class="section" id="s2">
+    <div class="section-hd" onclick="toggleSection('s2')">
+      <div class="section-num">2</div>
+      <span class="section-title">High-impact strategies</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body" id="his-body"></div>
+  </div>
+
+  <!-- S3 ENGAGEMENT -->
+  <div class="section" id="s3">
+    <div class="section-hd" onclick="toggleSection('s3')">
+      <div class="section-num">3</div>
+      <span class="section-title">Student engagement</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="tally-grid">
+        <div class="tally-card">
+          <span class="tally-label">Students present</span>
+          <div class="tally-ctrl">
+            <button class="tally-btn" onclick="adj('present',-1)">−</button>
+            <span class="tally-val" id="tv-present">0</span>
+            <button class="tally-btn" onclick="adj('present',1)">+</button>
+          </div>
+        </div>
+        <div class="tally-card">
+          <span class="tally-label">Actively engaged</span>
+          <div class="tally-ctrl">
+            <button class="tally-btn" onclick="adj('engaged',-1)">−</button>
+            <span class="tally-val" id="tv-engaged">0</span>
+            <button class="tally-btn" onclick="adj('engaged',1)">+</button>
+          </div>
+          <span id="ratio-badge" class="ratio-badge" style="display:none"></span>
+        </div>
+      </div>
+      <div id="eng-body"></div>
+      <div class="field">
+        <span class="label">Low-inference evidence (timestamped)</span>
+        <textarea id="f-eng-notes" placeholder="e.g. 3:04–3:07 – Students in groups of 4 discussing pros/cons; 19/22 students talking about prompt."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4 STRENGTHS -->
+  <div class="section" id="s4">
+    <div class="section-hd" onclick="toggleSection('s4')">
+      <div class="section-num">4</div>
+      <span class="section-title">Strengths and next step</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="field"><span class="label">Strength 1 — what is working right now</span><textarea id="f-str1" placeholder="Describe one concrete strength observed..."></textarea></div>
+      <div class="field"><span class="label">Strength 2 (optional)</span><textarea id="f-str2" placeholder="Second strength if applicable..."></textarea></div>
+      <div class="divider"></div>
+      <div class="field"><span class="label">High-leverage next step (one move, 2–3 weeks)</span><textarea id="f-nextstep" placeholder="If we focused on just one move for the next 2–3 weeks, it would be..."></textarea></div>
+      <div class="divider"></div>
+      <label class="check-row"><input type="checkbox" id="f-discussed"><span>Discussed with teacher during / after visit</span></label>
+      <div class="field"><span class="label">Teacher reflection / next step (optional)</span><textarea id="f-treflect" placeholder="Teacher's own words about what they noticed or plan to try..."></textarea></div>
+    </div>
+  </div>
+
+  <!-- S5 COACHING CYCLE -->
+  <div class="section" id="s5">
+    <div class="section-hd" onclick="toggleSection('s5')">
+      <div class="section-num">5</div>
+      <span class="section-title">Coaching cycle linkage</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="grid2">
+        <div class="field">
+          <span class="label">Coaching cycle stage</span>
+          <select id="f-stage">
+            <option value="">Select stage...</option>
+            <option>Pre-conference</option>
+            <option>First visit</option>
+            <option>Mid-cycle</option>
+            <option>End-of-cycle</option>
+          </select>
+        </div>
+        <div class="field"><span class="label">Goal alignment</span><input type="text" id="f-goalign" placeholder="Which teacher goal does today's visit address?"></div>
+      </div>
+      <label class="check-row"><input type="checkbox" id="f-moves"><span>Evidence collected today moves this goal forward</span></label>
+      <div class="field"><span class="label">Observer notes</span><textarea id="f-obsnotes" placeholder="Any additional context or follow-up items..."></textarea></div>
+    </div>
+  </div>
+
+  <div class="btn-bar">
+    <button class="btn btn-primary" onclick="saveRecord()">Save record</button>
+    <button class="btn btn-outline" onclick="exportText()">Export as text</button>
+    <button class="btn btn-outline" onclick="clearForm()">Clear form</button>
+  </div>
+</div>
+
+<!-- ══ RECORDS VIEW ══ -->
+<div class="view" id="view-records">
+  <div id="stats-area"></div>
+  <div class="records-header">
+    <h2>Saved records</h2>
+    <span class="record-count" id="rec-count"></span>
+  </div>
+  <div class="search-bar">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="search-input" placeholder="Search by teacher, class, subject..." oninput="renderRecords()">
+  </div>
+  <div id="records-list"></div>
+</div>
+
+<!-- ══ DETAIL VIEW ══ -->
+<div class="view" id="view-detail">
+  <div class="detail-hd">
+    <button class="btn btn-outline btn-sm" onclick="showView('records')">← Back</button>
+    <span class="detail-title" id="detail-title"></span>
+    <button class="btn btn-sm btn-outline" onclick="editRecord()">Edit</button>
+    <button class="btn btn-sm btn-danger" onclick="deleteRecord()">Delete</button>
+  </div>
+  <div id="detail-body"></div>
+  <div class="btn-bar">
+    <button class="btn btn-outline" onclick="exportCurrentRecord()">Export as text</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const HIS = [
+  {id:'lt', label:'Learning target is posted, clear, and referenced with students.'},
+  {id:'cfu', label:'Teacher checks for understanding frequently (e.g., cold call, exit tickets, whiteboards, turn-and-talk) and adjusts based on responses.'},
+  {id:'hot', label:'Tasks require higher-order thinking (explain, justify, compare, create) rather than mostly recall.'},
+  {id:'gradrel', label:'Modeling or worked examples are used, then responsibility shifts to students (I do → We do → You do).'},
+  {id:'acalang', label:'Academic language is explicitly taught and used by students (sentence stems, key vocabulary, talk moves).'}
+];
+const ENG = [
+  {id:'ontask', label:'Most students on-task without redirection'},
+  {id:'voluntary', label:'Many students voluntarily participating'},
+  {id:'explain', label:'Students explaining their thinking'},
+  {id:'collab', label:'Students collaborating productively'},
+  {id:'persist', label:'Students showing persistence when stuck'},
+  {id:'affect', label:'Students showing interest or positive affect'}
+];
+
+let tallies = {present:0, engaged:0};
+let currentView = 'form';
+let editingId = null;
+let detailId = null;
+
+// ── Build dynamic form sections ──
+function buildHIS(){
+  const body = document.getElementById('his-body');
+  HIS.forEach(h => {
+    const d = document.createElement('div');
+    d.className = 'obs-item';
+    d.innerHTML = `
+      <span class="obs-text">${h.label}</span>
+      <div class="pill-group" id="pg-${h.id}">
+        <button class="pill" onclick="selPill('${h.id}','observed',this)">Observed</button>
+        <button class="pill" onclick="selPill('${h.id}','not-observed',this)">Not observed</button>
+        <button class="pill" onclick="selPill('${h.id}','na',this)">N/A</button>
+      </div>
+      <textarea class="obs-note" id="hn-${h.id}" placeholder="Evidence notes..."></textarea>
+    `;
+    body.appendChild(d);
+  });
+}
+
+function buildENG(){
+  const body = document.getElementById('eng-body');
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px';
+  ENG.forEach(e => {
+    const d = document.createElement('div');
+    d.className = 'obs-item';
+    d.innerHTML = `
+      <span class="obs-text">${e.label}</span>
+      <div class="pill-group" id="pg-eng-${e.id}">
+        <button class="pill" onclick="selEngPill('${e.id}','observed',this)">Observed</button>
+        <button class="pill" onclick="selEngPill('${e.id}','not-observed',this)">Not observed</button>
+      </div>
+    `;
+    wrap.appendChild(d);
+  });
+  body.appendChild(wrap);
+}
+
+function selPill(id, val, btn){
+  const pg = document.getElementById('pg-'+id);
+  pg.querySelectorAll('.pill').forEach(p => p.classList.remove('sel-obs','sel-not','sel-na'));
+  btn.classList.add(val==='observed'?'sel-obs':val==='not-observed'?'sel-not':'sel-na');
+  btn.dataset.sel = val;
+}
+function selEngPill(id, val, btn){
+  const pg = document.getElementById('pg-eng-'+id);
+  pg.querySelectorAll('.pill').forEach(p => p.classList.remove('sel-obs','sel-not'));
+  btn.classList.add(val==='observed'?'sel-obs':'sel-not');
+  btn.dataset.sel = val;
+}
+function getPillVal(pgId){
+  const pg = document.getElementById(pgId);
+  if(!pg) return '';
+  const sel = pg.querySelector('[data-sel]');
+  return sel ? sel.dataset.sel : '';
+}
+function setPillVal(pgId, val){
+  const pg = document.getElementById(pgId);
+  if(!pg) return;
+  pg.querySelectorAll('.pill').forEach(p => {
+    p.classList.remove('sel-obs','sel-not','sel-na','sel-yes');
+    if(p.textContent.toLowerCase().includes(val==='observed'?'observed':val==='not-observed'?'not':val==='na'?'n/a':'__')){
+      if(val==='observed') p.classList.add('sel-obs');
+      else if(val==='not-observed') p.classList.add('sel-not');
+      else if(val==='na') p.classList.add('sel-na');
+      p.dataset.sel = val;
+    }
+  });
+}
+
+function adj(key, d){
+  tallies[key] = Math.max(0, tallies[key]+d);
+  document.getElementById('tv-'+key).textContent = tallies[key];
+  const badge = document.getElementById('ratio-badge');
+  if(tallies.present > 0){
+    const pct = Math.round(tallies.engaged / tallies.present * 100);
+    badge.textContent = tallies.engaged+' / '+tallies.present+' engaged ('+pct+'%)';
+    badge.style.display = 'inline-flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// ── Views ──
+function showView(v){
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  const idx = v==='form'?0:v==='records'?1:-1;
+  if(idx>=0) document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+  currentView = v;
+  if(v==='records') renderRecords();
+}
+
+function toggleSection(id){
+  document.getElementById(id).classList.toggle('collapsed');
+}
+
+// ── Storage ──
+function getRecords(){ return JSON.parse(localStorage.getItem('wt_records')||'[]'); }
+function saveRecords(r){ localStorage.setItem('wt_records', JSON.stringify(r)); }
+
+// ── Gather form data ──
+function gatherForm(){
+  const his = {};
+  HIS.forEach(h => { his[h.id] = {status: getPillVal('pg-'+h.id), notes: document.getElementById('hn-'+h.id).value}; });
+  const eng = {};
+  ENG.forEach(e => { eng[e.id] = getPillVal('pg-eng-'+e.id); });
+  return {
+    id: editingId || Date.now().toString(),
+    savedAt: new Date().toISOString(),
+    basics: {
+      teacher: document.getElementById('f-teacher').value,
+      date: document.getElementById('f-date').value,
+      subject: document.getElementById('f-subject').value,
+      grade: document.getElementById('f-grade').value,
+      timeIn: document.getElementById('f-timein').value,
+      timeOut: document.getElementById('f-timeout').value,
+      focus: document.getElementById('f-focus').value,
+      goal: document.getElementById('f-goal').value
+    },
+    highImpact: his,
+    engagement: {
+      present: tallies.present,
+      engaged: tallies.engaged,
+      indicators: eng,
+      evidenceNotes: document.getElementById('f-eng-notes').value
+    },
+    strengthsNext: {
+      strength1: document.getElementById('f-str1').value,
+      strength2: document.getElementById('f-str2').value,
+      nextStep: document.getElementById('f-nextstep').value,
+      discussed: document.getElementById('f-discussed').checked,
+      teacherReflect: document.getElementById('f-treflect').value
+    },
+    coachingCycle: {
+      stage: document.getElementById('f-stage').value,
+      goalAlignment: document.getElementById('f-goalign').value,
+      movesForward: document.getElementById('f-moves').checked,
+      observerNotes: document.getElementById('f-obsnotes').value
+    }
+  };
+}
+
+function saveRecord(){
+  const r = gatherForm();
+  if(!r.basics.teacher){ showToast('Add a teacher name first'); return; }
+  let records = getRecords();
+  const idx = records.findIndex(x => x.id === r.id);
+  if(idx >= 0) records[idx] = r;
+  else records.unshift(r);
+  saveRecords(records);
+  editingId = null;
+  document.getElementById('edit-banner').style.display = 'none';
+  showToast('Record saved');
+  clearForm(false);
+  setTimeout(()=>showView('records'), 800);
+}
+
+// ── Fill form from record ──
+function fillForm(r){
+  const b = r.basics;
+  document.getElementById('f-teacher').value = b.teacher||'';
+  document.getElementById('f-date').value = b.date||'';
+  document.getElementById('f-subject').value = b.subject||'';
+  document.getElementById('f-grade').value = b.grade||'';
+  document.getElementById('f-timein').value = b.timeIn||'';
+  document.getElementById('f-timeout').value = b.timeOut||'';
+  document.getElementById('f-focus').value = b.focus||'';
+  document.getElementById('f-goal').value = b.goal||'';
+  HIS.forEach(h => {
+    const d = r.highImpact[h.id]||{};
+    if(d.status) setPillVal('pg-'+h.id, d.status);
+    document.getElementById('hn-'+h.id).value = d.notes||'';
+  });
+  tallies.present = r.engagement.present||0;
+  tallies.engaged = r.engagement.engaged||0;
+  document.getElementById('tv-present').textContent = tallies.present;
+  document.getElementById('tv-engaged').textContent = tallies.engaged;
+  adj('engaged',0);
+  ENG.forEach(e => { if(r.engagement.indicators[e.id]) setPillVal('pg-eng-'+e.id, r.engagement.indicators[e.id]); });
+  document.getElementById('f-eng-notes').value = r.engagement.evidenceNotes||'';
+  document.getElementById('f-str1').value = r.strengthsNext.strength1||'';
+  document.getElementById('f-str2').value = r.strengthsNext.strength2||'';
+  document.getElementById('f-nextstep').value = r.strengthsNext.nextStep||'';
+  document.getElementById('f-discussed').checked = !!r.strengthsNext.discussed;
+  document.getElementById('f-treflect').value = r.strengthsNext.teacherReflect||'';
+  document.getElementById('f-stage').value = r.coachingCycle.stage||'';
+  document.getElementById('f-goalign').value = r.coachingCycle.goalAlignment||'';
+  document.getElementById('f-moves').checked = !!r.coachingCycle.movesForward;
+  document.getElementById('f-obsnotes').value = r.coachingCycle.observerNotes||'';
+}
+
+function clearForm(toast=true){
+  ['f-teacher','f-subject','f-grade','f-timein','f-timeout','f-goal','f-eng-notes','f-str1','f-str2','f-nextstep','f-treflect','f-goalign','f-obsnotes'].forEach(id=>{
+    const el = document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('f-focus').value='';
+  document.getElementById('f-stage').value='';
+  document.getElementById('f-discussed').checked=false;
+  document.getElementById('f-moves').checked=false;
+  document.querySelectorAll('.pill').forEach(p=>{ p.classList.remove('sel-obs','sel-not','sel-na'); delete p.dataset.sel; });
+  tallies={present:0,engaged:0};
+  document.getElementById('tv-present').textContent='0';
+  document.getElementById('tv-engaged').textContent='0';
+  document.getElementById('ratio-badge').style.display='none';
+  editingId=null;
+  document.getElementById('edit-banner').style.display='none';
+  if(toast) showToast('Form cleared');
+}
+
+// ── Records rendering ──
+function renderRecords(){
+  const records = getRecords();
+  const q = (document.getElementById('search-input').value||'').toLowerCase();
+  const filtered = q ? records.filter(r => {
+    const b = r.basics;
+    return [b.teacher,b.subject,b.grade,b.focus,b.goal].join(' ').toLowerCase().includes(q);
+  }) : records;
+
+  document.getElementById('rec-count').textContent = filtered.length + ' record' + (filtered.length!==1?'s':'');
+
+  // Stats
+  const statsArea = document.getElementById('stats-area');
+  const teachers = [...new Set(records.map(r=>r.basics.teacher).filter(Boolean))];
+  statsArea.innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-num">${records.length}</div><div class="stat-label">Total visits</div></div>
+      <div class="stat-card"><div class="stat-num">${teachers.length}</div><div class="stat-label">Teachers</div></div>
+      <div class="stat-card"><div class="stat-num">${records.filter(r=>r.strengthsNext&&r.strengthsNext.discussed).length}</div><div class="stat-label">Post-conferences</div></div>
+    </div>
+  `;
+
+  const list = document.getElementById('records-list');
+  if(filtered.length===0){
+    list.innerHTML = `<div class="empty-state"><div class="big">📋</div><p>${q?'No records match your search.':'No records yet.<br>Complete a visit form to get started.'}</p></div>`;
+    return;
+  }
+  list.innerHTML = filtered.map(r => {
+    const b = r.basics;
+    const d = b.date ? new Date(b.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+    const stage = r.coachingCycle&&r.coachingCycle.stage ? r.coachingCycle.stage : '';
+    const focus = b.focus||'';
+    const pct = r.engagement&&r.engagement.present>0 ? Math.round(r.engagement.engaged/r.engagement.present*100)+'% engaged' : '';
+    return `
+      <div class="record-card" onclick="openDetail('${r.id}')">
+        <div class="record-card-top">
+          <div>
+            <div class="record-teacher">${b.teacher||'Unnamed teacher'}</div>
+            <div class="record-meta">${[b.subject, b.grade?'Grade '+b.grade:'', d].filter(Boolean).join(' · ')}</div>
+          </div>
+          <div style="font-size:12px;color:var(--text3);flex-shrink:0">${b.timeIn||''}</div>
+        </div>
+        <div class="record-badges">
+          ${focus?`<span class="badge badge-blue">${focus}</span>`:''}
+          ${stage?`<span class="badge badge-green">${stage}</span>`:''}
+          ${pct?`<span class="badge badge-gray">${pct}</span>`:''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── Detail view ──
+function openDetail(id){
+  detailId = id;
+  const r = getRecords().find(x=>x.id===id);
+  if(!r) return;
+  const b = r.basics;
+  const d = b.date ? new Date(b.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) : '';
+  document.getElementById('detail-title').textContent = b.teacher||'Record';
+
+  const spClass = s => s==='observed'?'sp-obs':s==='not-observed'?'sp-not':'sp-na';
+  const spLabel = s => s==='observed'?'Observed':s==='not-observed'?'Not observed':s==='na'?'N/A':'—';
+
+  let html = `
+    <div class="detail-section">
+      <div class="detail-section-title">Basics</div>
+      ${row('Teacher', b.teacher)} ${row('Date', d)} ${row('Class', b.subject)} ${row('Grade', b.grade)}
+      ${row('Time', [b.timeIn,b.timeOut].filter(Boolean).join(' – '))}
+      ${row('Focus', b.focus)} ${row('Teacher goal', b.goal)}
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">High-impact strategies</div>
+      ${HIS.map(h=>{
+        const e = r.highImpact[h.id]||{};
+        return `<div class="detail-row"><span class="detail-val" style="flex:1;font-size:12px;line-height:1.4">${h.label}</span>
+          <span class="status-pill ${spClass(e.status)}">${spLabel(e.status)}</span></div>
+          ${e.notes?`<div style="font-size:12px;color:var(--text2);padding:2px 0 6px 0">→ ${e.notes}</div>`:''}`;
+      }).join('')}
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Student engagement</div>
+      ${row('Present', r.engagement.present)}
+      ${row('Engaged', r.engagement.engaged+(r.engagement.present>0?' ('+Math.round(r.engagement.engaged/r.engagement.present*100)+'%)':''))}
+      ${ENG.map(e=>{
+        const s = r.engagement.indicators[e.id];
+        if(!s) return '';
+        return `<div class="detail-row"><span class="detail-val" style="flex:1;font-size:12px">${e.label}</span>
+          <span class="status-pill ${spClass(s)}">${spLabel(s)}</span></div>`;
+      }).join('')}
+      ${r.engagement.evidenceNotes?`<div class="detail-row"><span class="detail-key">Evidence</span><span class="detail-val" style="font-size:12px">${r.engagement.evidenceNotes}</span></div>`:''}
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Strengths and next step</div>
+      ${r.strengthsNext.strength1?row('Strength 1', r.strengthsNext.strength1):''}
+      ${r.strengthsNext.strength2?row('Strength 2', r.strengthsNext.strength2):''}
+      ${r.strengthsNext.nextStep?row('Next step', r.strengthsNext.nextStep):''}
+      ${row('Discussed', r.strengthsNext.discussed?'Yes':'No')}
+      ${r.strengthsNext.teacherReflect?row('Teacher reflection', r.strengthsNext.teacherReflect):''}
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Coaching cycle</div>
+      ${row('Stage', r.coachingCycle.stage)}
+      ${row('Goal alignment', r.coachingCycle.goalAlignment)}
+      ${row('Moves goal forward', r.coachingCycle.movesForward?'Yes':'No')}
+      ${r.coachingCycle.observerNotes?row('Observer notes', r.coachingCycle.observerNotes):''}
+    </div>
+  `;
+  document.getElementById('detail-body').innerHTML = html;
+  showView('detail');
+}
+
+function row(k, v){ if(!v&&v!==0) return ''; return `<div class="detail-row"><span class="detail-key">${k}</span><span class="detail-val">${v}</span></div>`; }
+
+function editRecord(){
+  const r = getRecords().find(x=>x.id===detailId);
+  if(!r) return;
+  editingId = r.id;
+  fillForm(r);
+  const banner = document.getElementById('edit-banner');
+  banner.style.display = 'flex';
+  showView('form');
+}
+
+function cancelEdit(){
+  editingId = null;
+  document.getElementById('edit-banner').style.display='none';
+  clearForm(false);
+}
+
+function deleteRecord(){
+  if(!confirm('Delete this record permanently?')) return;
+  let records = getRecords().filter(x=>x.id!==detailId);
+  saveRecords(records);
+  showToast('Record deleted');
+  showView('records');
+}
+
+// ── Export ──
+function buildExportText(r){
+  const b = r.basics;
+  const lines = [];
+  const d = b.date ? new Date(b.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) : b.date;
+  lines.push('INSTRUCTIONAL WALKTHROUGH RECORD');
+  lines.push('=================================');
+  lines.push('Teacher: '+b.teacher+'   Date: '+d);
+  lines.push('Class: '+b.subject+'   Grade: '+b.grade+'   Time: '+(b.timeIn||'')+'–'+(b.timeOut||''));
+  lines.push('Focus: '+b.focus+'   Teacher goal: '+b.goal);
+  lines.push('');
+  lines.push('HIGH-IMPACT STRATEGIES');
+  lines.push('----------------------');
+  HIS.forEach(h=>{
+    const e=r.highImpact[h.id]||{};
+    lines.push('['+((e.status||'—').toUpperCase())+'] '+h.label);
+    if(e.notes) lines.push('   → '+e.notes);
+  });
+  lines.push('');
+  lines.push('STUDENT ENGAGEMENT');
+  lines.push('------------------');
+  const pct = r.engagement.present>0?Math.round(r.engagement.engaged/r.engagement.present*100):0;
+  lines.push('Present: '+r.engagement.present+'   Engaged: '+r.engagement.engaged+' ('+pct+'%)');
+  ENG.forEach(e=>{
+    const s=r.engagement.indicators[e.id];
+    if(s) lines.push('['+s.toUpperCase()+'] '+e.label);
+  });
+  if(r.engagement.evidenceNotes) lines.push('Evidence: '+r.engagement.evidenceNotes);
+  lines.push('');
+  lines.push('STRENGTHS AND NEXT STEP');
+  lines.push('-----------------------');
+  if(r.strengthsNext.strength1) lines.push('Strength 1: '+r.strengthsNext.strength1);
+  if(r.strengthsNext.strength2) lines.push('Strength 2: '+r.strengthsNext.strength2);
+  if(r.strengthsNext.nextStep) lines.push('Next step: '+r.strengthsNext.nextStep);
+  lines.push('Discussed with teacher: '+(r.strengthsNext.discussed?'Yes':'No'));
+  if(r.strengthsNext.teacherReflect) lines.push('Teacher reflection: '+r.strengthsNext.teacherReflect);
+  lines.push('');
+  lines.push('COACHING CYCLE');
+  lines.push('--------------');
+  lines.push('Stage: '+r.coachingCycle.stage);
+  lines.push('Goal alignment: '+r.coachingCycle.goalAlignment);
+  lines.push('Moves goal forward: '+(r.coachingCycle.movesForward?'Yes':'No'));
+  if(r.coachingCycle.observerNotes) lines.push('Observer notes: '+r.coachingCycle.observerNotes);
+  return lines.join('\n');
+}
+
+function exportText(){
+  const r = gatherForm();
+  navigator.clipboard.writeText(buildExportText(r)).then(()=>showToast('Copied to clipboard')).catch(()=>showToast('Done'));
+}
+
+function exportCurrentRecord(){
+  const r = getRecords().find(x=>x.id===detailId);
+  if(!r) return;
+  navigator.clipboard.writeText(buildExportText(r)).then(()=>showToast('Copied to clipboard')).catch(()=>showToast('Done'));
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ── Apps Script sync ──
+const GAS_URL_KEY = 'wt_gas_url';
+const GAS_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycbwyqBUhg-4fPNSCJz77fmiciRqi0ZBtBWVejtGJdOaPyIPhbiqNRWNynJCfXQzyciWqtA/exec';
+
+function getGasUrl(){ return localStorage.getItem(GAS_URL_KEY) || GAS_URL_DEFAULT; }
+
+// GET with URL-encoded data — most reliable approach for Apps Script
+function gasGet(url, params){
+  const qs = Object.entries(params).map(([k,v]) => encodeURIComponent(k)+'='+encodeURIComponent(v)).join('&');
+  return fetch(url+'?'+qs);
+}
+
+function saveRecord(){
+  const r = gatherForm();
+  if(!r.basics.teacher){ showToast('Add a teacher name first'); return; }
+  let records = getRecords();
+  const idx = records.findIndex(x => x.id === r.id);
+  if(idx >= 0) records[idx] = r;
+  else records.unshift(r);
+  saveRecords(records);
+  editingId = null;
+  document.getElementById('edit-banner').style.display = 'none';
+
+  const gasUrl = getGasUrl();
+  setSyncStatus('syncing');
+  gasGet(gasUrl, {action: 'upsert', data: JSON.stringify(r)})
+    .then(res => res.json())
+    .then(data => {
+      if(data.status === 'ok'){
+        setSyncStatus('synced');
+        showToast('Saved and synced to Sheet');
+      } else {
+        setSyncStatus('error');
+        showToast('Saved locally — sync error: '+(data.message||''));
+      }
+    })
+    .catch(() => {
+      setSyncStatus('error');
+      showToast('Saved locally — offline');
+    });
+
+  clearForm(false);
+  setTimeout(()=>showView('records'), 900);
+}
+
+function deleteRecord(){
+  if(!confirm('Delete this record permanently?')) return;
+  const gasUrl = getGasUrl();
+  gasGet(gasUrl, {action: 'delete', id: detailId}).catch(()=>{});
+  let records = getRecords().filter(x=>x.id!==detailId);
+  saveRecords(records);
+  showToast('Record deleted');
+  showView('records');
+}
+
+function setSyncStatus(state){
+  const el = document.getElementById('sync-status');
+  if(!el) return;
+  const states = {
+    syncing: {text:'Syncing...', color:'var(--text2)'},
+    synced:  {text:'Synced to Sheet', color:'var(--success)'},
+    error:   {text:'Sync failed — saved locally', color:'var(--danger)'},
+    none:    {text:'Sheet connected', color:'var(--text3)'}
+  };
+  const s = states[state]||states.none;
+  el.textContent = s.text;
+  el.style.color = s.color;
+}
+
+function openSettings(){
+  document.getElementById('settings-modal').style.display = 'flex';
+  document.getElementById('gas-url-input').value = getGasUrl();
+}
+function closeSettings(){
+  document.getElementById('settings-modal').style.display = 'none';
+}
+function saveSettings(){
+  const url = document.getElementById('gas-url-input').value.trim();
+  localStorage.setItem(GAS_URL_KEY, url || GAS_URL_DEFAULT);
+  closeSettings();
+  showToast('Settings saved');
+  testConnection(url || GAS_URL_DEFAULT);
+}
+function testConnection(url){
+  setSyncStatus('syncing');
+  fetch(url+'?action=ping')
+    .then(r=>r.json())
+    .then(d=>{ setSyncStatus(d.status==='ok'?'none':'error'); showToast(d.status==='ok'?'Connection verified':'Connection failed'); })
+    .catch(()=>{ setSyncStatus('error'); showToast('Could not reach Sheet'); });
+}
+
+function exportAllJSON(){
+  const records = getRecords();
+  const blob = new Blob([JSON.stringify(records, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'walkthrough-records-'+new Date().toISOString().split('T')[0]+'.json';
+  a.click();
+}
+function importJSON(){
+  const input = document.createElement('input');
+  input.type='file'; input.accept='.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const imported = JSON.parse(ev.target.result);
+        if(!Array.isArray(imported)) throw new Error();
+        const existing = getRecords();
+        const existingIds = new Set(existing.map(r=>r.id));
+        const merged = [...existing, ...imported.filter(r=>!existingIds.has(r.id))];
+        saveRecords(merged);
+        showToast(imported.length+' records imported');
+        renderRecords();
+      } catch(e){ showToast('Invalid file'); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ── Init ──
+buildHIS();
+buildENG();
+document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+testConnection(getGasUrl());
+</script>
+
+<!-- Settings modal -->
+<div id="settings-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--surface);border-radius:var(--radius);padding:24px;max-width:480px;width:100%;border:1px solid var(--border);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <span style="font-size:15px;font-weight:600;color:var(--text)">Settings</span>
+      <button onclick="closeSettings()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text2);line-height:1;">×</button>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:6px;">Google Apps Script Web App URL</label>
+      <input type="text" id="gas-url-input" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%;padding:9px 11px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);font-family:inherit;">
+      <p style="font-size:12px;color:var(--text3);margin-top:6px;line-height:1.5;">Paste your deployed Apps Script URL here to sync records to Google Sheets. Leave blank to use local storage only.</p>
+    </div>
+    <div style="margin-bottom:20px;padding:12px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);">
+      <p style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;">Backup / Restore</p>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline btn-sm" onclick="exportAllJSON()">Export all records (.json)</button>
+        <button class="btn btn-outline btn-sm" onclick="importJSON()">Import records (.json)</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeSettings()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Save</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
